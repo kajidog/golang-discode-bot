@@ -1,0 +1,7 @@
+FROM voicevox/voicevox_engine:cpu-ubuntu20.04-latest
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip
+
+# その他の必要なコマンド
+RUN pip3 install websockets uvicorn
+RUN pip3 install uvicorn[standard]
