@@ -1,9 +1,6 @@
 services:
   voicebox:
-    build:
-      dockerfile: Dockerfile.voiceBox
-    # image: voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
-    tty: true
+    image: voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
     networks:
       - voicebox-net
 

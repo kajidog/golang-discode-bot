@@ -1,9 +1,24 @@
 # golang discode bot
 
-なんかGolangでDiscordのBot作る
+Discordのメッセージを読み上げるデスクトップアプリ  
+voicevoxを使用し、ユーザーごとに音声設定可能
 
 ## 使用言語・フレームワーク・その他
-
-- golang
-- docker
+- wails cli v2.8.1
+- golang v1.20
+- node v20.12.2
 - docker-compose
+
+## 環境構築
+
+```
+docker compose up
+cd frontend npm i
+```
+
+## 開発
+
+```
+wails dev
+```
+
