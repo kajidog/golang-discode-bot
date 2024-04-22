@@ -1,0 +1,29 @@
+services:
+  voicebox:
+    image: voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
+    networks:
+      - voicebox-net
+
+  desktop:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "34115:34115"
+    volumes:
+      - .:/app
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "50021:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf # Nginx設定ファイル
+    depends_on:
+      - voicebox
+    networks:
+      - voicebox-net
+networks:
+  voicebox-net:
+    driver: bridge
