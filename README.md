@@ -11,9 +11,15 @@ voicevoxを使用し、ユーザーごとに音声設定可能
 
 ## 環境構築
 
-```
+docker
+```bash
 docker compose up
-cd frontend npm i
+```
+
+node
+```bash
+cd frontend
+npm i
 ```
 
 ## 開発
