@@ -8,14 +8,17 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 // App struct
 type App struct {
-	ctx context.Context
-	bot *Bot
+	ctx      context.Context
+	bot      *Bot
+	Messages []Message
+	mu       sync.Mutex
 }
 
 type SynthesisQuery struct {
@@ -36,6 +39,11 @@ type Style struct {
 	Type string `json:"type"`
 }
 
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
@@ -43,14 +51,10 @@ func NewApp() *App {
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
-
-	token := "TOKEN"
-
 	// Perform your setup here
 	a.ctx = ctx
-	bot, _ := NewBot(ctx, token)
-	a.bot = bot
-	go a.bot.Start()
+	a.Messages = make([]Message, 0)
+
 }
 
 // domReady is called after front-end resources have been loaded
@@ -143,4 +147,85 @@ func (a *App) FetchSpeakers() ([]Speaker, error) {
 	}
 
 	return speakers, nil
+}
+
+func (a *App) chatWithGPT(prompt string) (string, error) {
+
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	// ユーザーからのメッセージを追加
+	a.Messages = append(a.Messages, Message{Role: "user", Content: prompt})
+
+	url := "https://api.openai.com/v1/chat/completions"
+	body := map[string]interface{}{
+		"messages": a.Messages,
+		"model":    "gpt-4-turbo",
+	}
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+"")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	responseData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var response struct {
+		Choices []struct {
+			Message struct {
+				Role    string `json:"role"`
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	json.Unmarshal(responseData, &response)
+
+	if len(response.Choices) > 0 {
+
+		// ChatGPTからの応答をメッセージ配列に追加
+		a.Messages = append(a.Messages, Message{Role: "system", Content: response.Choices[0].Message.Content})
+
+		// メッセージ配列が10件以上の場合は最初のメッセージを削除
+		if len(a.Messages) > 10 {
+			a.Messages = a.Messages[1:]
+		}
+
+		return response.Choices[0].Message.Content, nil
+	}
+	return "No response from GPT.", nil
+}
+
+func (a *App) InitializeBot(token string) error {
+
+	if a.bot != nil && a.bot.session != nil {
+		a.bot.session.Close()
+	}
+
+	var bot, err = NewBot(a.ctx, token, a)
+	if err != nil {
+		return err
+	}
+
+	a.bot = bot
+	err = bot.Start()
+	if err != nil {
+		return err
+	}
+	return nil
 }
