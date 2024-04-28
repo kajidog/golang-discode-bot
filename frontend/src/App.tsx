@@ -73,6 +73,12 @@ const playAudio = async (text: string, speaker: string) => {
   source.buffer = audioBuffer;
   source.connect(audioContext.destination);
   source.start();
+
+  return new Promise<void>((resolve) => {
+    source.onended = () => {
+      resolve();
+    };
+  });
 };
 
 function App() {
@@ -81,8 +87,57 @@ function App() {
   const [selected, setSelected] = useState<string>("");
   const [messages, setMessages] = useState<MessageEvent[]>([]);
   const [voice, setVoice] = useState<any[]>([]);
-  const [selectID, setSelectID] = useState<{ [key: string]: string }>({});
-  const [speaker, setSpeaker] = useState<{ [key: string]: string }>({});
+  const [selectID, setSelectID] = useState<{ [key: string]: string }>(() => {
+    const selectID = localStorage.getItem("selectID");
+    if (selectID) {
+      return JSON.parse(selectID);
+    }
+    return {};
+  });
+  const [speaker, setSpeaker] = useState<{ [key: string]: string }>(() => {
+    const speaker = localStorage.getItem("speaker");
+    if (speaker) {
+      return JSON.parse(speaker);
+    }
+    return {};
+  });
+  const [queue, setQueue] = useState<MessageEvent[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  ///____________________________________
+  ///
+  // タスクをキューに追加する関数
+  const enqueueTask = (task: MessageEvent) => {
+    setQueue((prevQueue) => [...prevQueue, task]);
+  };
+
+  // キューからタスクを実行する関数
+  const processQueue = async () => {
+    if (queue.length > 0 && !isProcessing) {
+      setIsProcessing(true);
+      const currentTask = queue[0];
+
+      try {
+        if (currentTask) {
+          await playAudio(currentTask.content, String(currentTask.speaker || "1"));
+        }
+      } catch (error) {
+        console.error("Task failed:", currentTask, error);
+      }
+
+      // 現在のタスクをキューから削除し、次のタスクへ
+      setQueue((prevQueue) => prevQueue.slice(1));
+      setIsProcessing(false);
+    }
+  };
+
+  // キューが更新されるたびに処理を試みる
+  useEffect(() => {
+    processQueue();
+  }, [queue, isProcessing]);
+
+  ///____________________________________
+  ///
 
   // サーバ変更
   const handleChangeServer = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -99,10 +154,8 @@ function App() {
     EventsOn("messageReceived", (message) => {
       const member = getObjectByPath(members, "user.id", message.id);
       const speaker = selectID[member?.user?.id];
-      if (speaker !== "") {
-        playAudio("" + message.content, String(speaker || "1"));
-      }
 
+      enqueueTask({ ...message, speaker });
       setMessages((prevMessages) => [...prevMessages, { ...message, speaker }]);
     });
 
@@ -112,13 +165,24 @@ function App() {
   }, [selectID, members, speaker]);
 
   const handleChangeCharacter = (id: string, speaker: string) => {
-    setSpeaker((value) => ({ ...value, [id]: speaker }));
-    setSelectID((value) => ({
-      ...value,
-      [id]: findObjectByKey(voice, "speaker_uuid", speaker)?.styles[0].id || "",
-    }));
+    setSpeaker((value) => {
+      const next = { ...value, [id]: speaker };
+      localStorage.setItem("speaker", JSON.stringify(next));
+
+      return next;
+    });
+    setSelectID((value) => {
+      const next = {
+        ...value,
+        [id]:
+          findObjectByKey(voice, "speaker_uuid", speaker)?.styles[0].id || "",
+      };
+      localStorage.setItem("selectID", JSON.stringify(next));
+      return next;
+    });
   };
   const handleChangeSelectId = (id: string, speaker: string) => {
+    localStorage.setItem("selectID", JSON.stringify(selectID));
     setSelectID((value) => ({ ...value, [id]: speaker }));
   };
 
@@ -156,6 +220,7 @@ function App() {
                 </TableCell>
                 <TableCell>
                   <NativeSelect
+                    value={speaker[member.user.id]}
                     onChange={(e) => {
                       handleChangeCharacter(
                         member?.user?.id,
