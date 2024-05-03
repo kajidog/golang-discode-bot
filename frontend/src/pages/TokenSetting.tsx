@@ -1,5 +1,5 @@
 import React from "react";
-import { BotTokenForm } from "../features/BotToken/BotTokenForm";
+import { BotSettingForm } from "../features/BotToken/BotSettingForm";
 import { css } from "@emotion/react";
 
 const style = css`
@@ -12,7 +12,7 @@ const style = css`
 export const TokenSetting: React.FC = () => {
   return (
     <div css={style}>
-      <BotTokenForm />
+      <BotSettingForm />
     </div>
   );
 };
