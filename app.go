@@ -11,6 +11,8 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -55,6 +57,10 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.Messages = make([]Message, 0)
 
+}
+
+func (a *App) onSecondInstanceLaunch(value options.SecondInstanceData) {
+	runtime.EventsEmit(a.ctx, "codeReceived", value.Args)
 }
 
 // domReady is called after front-end resources have been loaded
@@ -171,7 +177,7 @@ func (a *App) chatWithGPT(prompt string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("Authorization", "Bearer "+"")
+	req.Header.Set("Authorization", "Bearer "+"x")
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -212,6 +218,7 @@ func (a *App) chatWithGPT(prompt string) (string, error) {
 }
 
 func (a *App) InitializeBot(token string) error {
+	a.mu.Lock()
 
 	if a.bot != nil && a.bot.session != nil {
 		a.bot.session.Close()
@@ -219,11 +226,15 @@ func (a *App) InitializeBot(token string) error {
 
 	var bot, err = NewBot(a.ctx, token, a)
 	if err != nil {
+		defer a.mu.Unlock()
 		return err
 	}
 
 	a.bot = bot
-	err = bot.Start()
+	err = a.bot.Start()
+
+	defer a.mu.Unlock()
+
 	if err != nil {
 		return err
 	}
