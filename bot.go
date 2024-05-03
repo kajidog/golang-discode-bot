@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -103,5 +104,21 @@ func (b *Bot) GetGuilds() ([]*discordgo.UserGuild, error) {
 		log.Printf("Failed to retrieve guilds: %v", err)
 		return nil, err
 	}
+	return guilds, nil
+}
+
+func (b *Bot) GetUserGuilds(token string) ([]*discordgo.UserGuild, error) {
+	// Discord sessionを作成
+	dg, err := discordgo.New("Bot " + token)
+	if err != nil {
+		return nil, err
+	}
+
+	// ユーザーのギルド一覧を取得
+	guilds, err := dg.UserGuilds(100, "", "", false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get guilds: %w", err)
+	}
+
 	return guilds, nil
 }
