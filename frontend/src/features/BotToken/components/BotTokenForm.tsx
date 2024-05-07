@@ -28,7 +28,9 @@ interface BotTokenForm {
 }
 
 export const BotTokenForm: React.FC<BotTokenForm> = (props) => {
-  const { handleSubmit, errors, register, loading } = useBotTokenForm();
+  const { handleSubmit, errors, register, loading } = useBotTokenForm({
+    next: props.next,
+  });
 
   return (
     <div css={style.tabContent}>
@@ -45,7 +47,6 @@ export const BotTokenForm: React.FC<BotTokenForm> = (props) => {
       <form
         onSubmit={async (e) => {
           await handleSubmit(e);
-          props.next();
         }}
       >
         <div css={style.form}>
@@ -66,6 +67,15 @@ export const BotTokenForm: React.FC<BotTokenForm> = (props) => {
             error={!!errors.clientId?.message}
             helperText={errors.clientId?.message}
             {...register("clientId")}
+          />
+          <TextField
+            variant="filled"
+            fullWidth
+            id="bot-form-client-secret"
+            label="client-secret"
+            error={!!errors.clientSecret?.message}
+            helperText={errors.clientSecret?.message}
+            {...register("clientSecret")}
           />
           <TextField
             variant="filled"

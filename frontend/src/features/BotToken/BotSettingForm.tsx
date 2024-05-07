@@ -1,25 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { BotFormValue, tokenSchema } from "./schemas";
-import { useBot } from "../../app/bot/BotProvider";
-import {
-  Box,
-  Button,
-  Link,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-  css,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { BrowserLink } from "../../components/Link";
-import { storageKeys } from "../../context/storageKeys";
+import { Box, Paper, Step, StepLabel, Stepper, css } from "@mui/material";
 import { BotTokenForm } from "./components/BotTokenForm";
 import { UserTokenForm } from "./components/UserTokenForm";
 
@@ -30,11 +10,10 @@ const style = {
   }),
 };
 
-const steps = ["ボット設定", "ユーザー設定", "ChatGPT設定"];
+const steps = ["ボット設定", "ユーザー連携", "ChatGPT設定"];
 
 interface BotSettingForm {}
 export const BotSettingForm: React.FC<BotSettingForm> = () => {
-  const { setBotSetting, token } = useBot();
   const [step, setStep] = useState(0);
 
   return (

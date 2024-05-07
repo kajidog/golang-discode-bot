@@ -28,7 +28,7 @@ interface BotTokenForm {
 }
 
 export const BotTokenForm: React.FC<BotTokenForm> = (props) => {
-  const { handleSubmit, errors, register } = useBotTokenForm();
+  const { handleSubmit, errors, register } = useBotTokenForm(props);
 
   return (
     <div css={style.tabContent}>

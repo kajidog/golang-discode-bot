@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
@@ -61,6 +62,10 @@ func (a *App) startup(ctx context.Context) {
 
 func (a *App) onSecondInstanceLaunch(value options.SecondInstanceData) {
 	runtime.EventsEmit(a.ctx, "codeReceived", value.Args)
+}
+
+func (a *App) OnUrlOpen(url string) {
+	runtime.EventsEmit(a.ctx, "codeReceived", url)
 }
 
 // domReady is called after front-end resources have been loaded
@@ -133,6 +138,55 @@ func (a *App) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 }
 func (a *App) GetGuilds() ([]*discordgo.UserGuild, error) {
 	return a.bot.GetGuilds()
+}
+
+func (a *App) GetUserGuilds(token string) ([]*discordgo.UserGuild, error) {
+	// Discord sessionを作成
+	dg, err := discordgo.New("Bot " + token)
+	if err != nil {
+		return nil, err
+	}
+
+	// ユーザーのギルド一覧を取得
+	guilds, err := dg.UserGuilds(100, "", "", false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get guilds: %w", err)
+	}
+
+	return guilds, nil
+}
+
+func (a *App) FetchDiscordToken(clientID, clientSecret, code, redirectURI string) (string, error) {
+	// リクエストのボディを作成
+	data := url.Values{}
+	data.Set("client_id", clientID)
+	data.Set("client_secret", clientSecret)
+	data.Set("grant_type", "authorization_code")
+	data.Set("code", code)
+	data.Set("redirect_uri", redirectURI)
+
+	// リクエストを作成
+	req, err := http.NewRequest("POST", "https://discordapp.com/api/oauth2/token", strings.NewReader(data.Encode()))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	// HTTPクライアントを作成し、リクエストを送信
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// レスポンスボディを読み込み
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), nil
 }
 
 func (a *App) FetchSpeakers() ([]Speaker, error) {

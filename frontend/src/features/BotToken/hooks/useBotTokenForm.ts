@@ -4,9 +4,10 @@ import { BotFormValue, tokenSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-export const useBotTokenForm = () => {
+export const useBotTokenForm = ({ next }: { next: () => void }) => {
   const [loading, setLoading] = useState(false);
-  const { setBotSetting, token, clientId, redirectURI } = useBot();
+  const { setBotSetting, token, clientId, redirectURI, clientSecret } =
+    useBot();
   const {
     register,
     handleSubmit,
@@ -17,6 +18,7 @@ export const useBotTokenForm = () => {
     defaultValues: {
       token: token ?? "",
       clientId: clientId ?? "",
+      clientSecret: clientSecret ?? "",
       redirectURI: redirectURI ?? "",
     },
   });
@@ -24,7 +26,13 @@ export const useBotTokenForm = () => {
   const setBotToken = async (value: BotFormValue) => {
     try {
       setLoading(true);
-      await setBotSetting(value.token, value.clientId, value.redirectURI);
+      await setBotSetting(
+        value.token,
+        value.clientId,
+        value.redirectURI,
+        value.clientSecret
+      );
+      next();
     } catch (err) {
       setError(
         "token",
