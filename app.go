@@ -22,6 +22,7 @@ type App struct {
 	bot      *Bot
 	Messages []Message
 	mu       sync.Mutex
+	gpt      string
 }
 
 type SynthesisQuery struct {
@@ -231,7 +232,7 @@ func (a *App) chatWithGPT(prompt string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("Authorization", "Bearer "+"x")
+	req.Header.Set("Authorization", "Bearer "+a.gpt)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -271,11 +272,17 @@ func (a *App) chatWithGPT(prompt string) (string, error) {
 	return "No response from GPT.", nil
 }
 
+func (a *App) InitializeGPT(token string) error {
+	a.gpt = token
+	return nil
+}
+
 func (a *App) InitializeBot(token string) error {
 	a.mu.Lock()
 
 	if a.bot != nil && a.bot.session != nil {
 		a.bot.session.Close()
+		a.bot = nil
 	}
 
 	var bot, err = NewBot(a.ctx, token, a)

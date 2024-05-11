@@ -1,14 +1,14 @@
-import { Link, Navigate, Outlet } from "react-router-dom";
-import { useBot } from "./BotProvider";
-import { useEffect, useState } from "react";
-import { InitializeBot } from "../../../wailsjs/go/main/App";
+import { Link, Navigate, Outlet } from 'react-router-dom';
+import { useBot } from './BotProvider';
+import { useEffect, useState } from 'react';
+import { InitializeBot } from '../../../wailsjs/go/main/App';
 
 export function Protect() {
   const { token } = useBot();
   const [loading, setLading] = useState<boolean | null>(null);
   useEffect(() => {
     if (token) {
-      InitializeBot(token).then(() => {
+      InitializeBot(token).finally(() => {
         setLading(false);
       });
     }
