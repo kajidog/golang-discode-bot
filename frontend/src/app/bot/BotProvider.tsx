@@ -17,6 +17,9 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
   const [clientId, setClientId] = useState(
     localStorage.getItem(storageKeys.BOT_CLIENT_ID) || undefined
   );
+  const [clientSecret, setClientSecret] = useState(
+    localStorage.getItem(storageKeys.BOT_CLIENT_SECRET) || undefined
+  );
   const [redirectURI, setRedirectURI] = useState(
     localStorage.getItem(storageKeys.BOT_REDIRECT_URI) || undefined
   );
@@ -38,17 +41,23 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
   const handleChangeToken = async (
     nextToken: string,
     clientId: string,
-    redirectURI: string
+    redirectURI: string,
+    clientSecret: string
   ) => {
     try {
+      console.log(nextToken, clientId, redirectURI);
+
       await InitializeBot(nextToken);
 
       setError("");
       setToken(nextToken);
       setClientId(clientId);
+      setClientSecret(clientSecret);
       setRedirectURI(redirectURI);
       localStorage.setItem(storageKeys.BOT_TOKEN, nextToken);
       localStorage.setItem(storageKeys.BOT_CLIENT_ID, clientId);
+      localStorage.setItem(storageKeys.BOT_CLIENT_SECRET, clientSecret);
+      localStorage.setItem(storageKeys.BOT_REDIRECT_URI, redirectURI);
       localStorage.setItem(storageKeys.BOT_REDIRECT_URI, redirectURI);
 
       return;
@@ -66,6 +75,7 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
         token,
         redirectURI,
         clientId,
+        clientSecret,
         userToken,
         errorMessage: error,
         reset,

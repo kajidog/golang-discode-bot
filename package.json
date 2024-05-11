@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "prepare": "husky install",
+    "install": "cd ./frontend && npm i",
+    "dev": "cd ./frontend && npm run dev"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "prettier": "^3.2.5"
+  }
+}

@@ -12,5 +12,14 @@
   "Info": {
     "productName": "VoicePing",
     "productVersion": "1.0.0"
+  },
+  "info": {
+    "protocols": [
+      {
+        "scheme": "VoicePing",
+        "description": "Discord Bot",
+        "role": "Tool"
+      }
+    ]
   }
 }
