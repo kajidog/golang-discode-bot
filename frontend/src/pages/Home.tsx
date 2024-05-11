@@ -8,15 +8,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
-import { ChangeEvent, useEffect, useState } from "react";
-import { GetGuilds, GetGuildMembers } from "../../wailsjs/go/main/App";
-import { SynthesizeAudio, FetchSpeakers } from "../../wailsjs/go/main/App";
-import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
-import { BrowserLink } from "../components/Link";
-import { storageKeys } from "../context/storageKeys";
-import { useBot } from "../app/bot/BotProvider";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { GetGuilds, GetGuildMembers } from '../../wailsjs/go/main/App';
+import { SynthesizeAudio, FetchSpeakers } from '../../wailsjs/go/main/App';
+import { EventsOn, EventsOff } from '../../wailsjs/runtime/runtime';
+import { BrowserLink } from '../components/Link';
+import { storageKeys } from '../context/storageKeys';
+import { useBot } from '../app/bot/BotProvider';
+import { useNavigate } from 'react-router-dom';
+import { useChatGPT } from '../features/BotToken/hooks/useChatGPT';
 
 let audioContext: any;
 
@@ -44,7 +45,7 @@ function getObjectByPath<T>(
   path: string,
   value: any
 ): T | undefined {
-  const pathParts = path.split(".");
+  const pathParts = path.split('.');
   return items.find((item) => getValueByPath(item, pathParts) === value);
 }
 
@@ -61,7 +62,7 @@ function getValueByPath<T>(obj: T, pathParts: string[]): any {
 
 const playAudio = async (text: string, speaker: string) => {
   if (!audioContext) {
-    console.warn("AudioContext is not initialized!");
+    console.warn('AudioContext is not initialized!');
     initializeAudioContext();
   }
 
@@ -88,25 +89,26 @@ const playAudio = async (text: string, speaker: string) => {
 function App() {
   const [members, setMembers] = useState<any[]>([]);
   const [guilds, setGuilds] = useState<any[]>([]);
-  const [selected, setSelected] = useState<string>("");
+  const [selected, setSelected] = useState<string>('');
   const [messages, setMessages] = useState<MessageEvent[]>([]);
+  useChatGPT();
   const [clientId] = useState(
-    localStorage.getItem(storageKeys.BOT_CLIENT_ID) || ""
+    localStorage.getItem(storageKeys.BOT_CLIENT_ID) || ''
   );
   const { reset } = useBot();
   const [redirectURI] = useState(
-    localStorage.getItem(storageKeys.BOT_REDIRECT_URI) || ""
+    localStorage.getItem(storageKeys.BOT_REDIRECT_URI) || ''
   );
   const [voice, setVoice] = useState<any[]>([]);
   const [selectID, setSelectID] = useState<{ [key: string]: string }>(() => {
-    const selectID = localStorage.getItem("selectID");
+    const selectID = localStorage.getItem('selectID');
     if (selectID) {
       return JSON.parse(selectID);
     }
     return {};
   });
   const [speaker, setSpeaker] = useState<{ [key: string]: string }>(() => {
-    const speaker = localStorage.getItem("speaker");
+    const speaker = localStorage.getItem('speaker');
     if (speaker) {
       return JSON.parse(speaker);
     }
@@ -132,11 +134,11 @@ function App() {
         if (currentTask) {
           await playAudio(
             currentTask.content,
-            String(currentTask.speaker || "1")
+            String(currentTask.speaker || '1')
           );
         }
       } catch (error) {
-        console.error("Task failed:", currentTask, error);
+        console.error('Task failed:', currentTask, error);
       }
 
       // 現在のタスクをキューから削除し、次のタスクへ
@@ -165,8 +167,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    EventsOn("messageReceived", (message) => {
-      const member = getObjectByPath(members, "user.id", message.id);
+    EventsOn('messageReceived', (message) => {
+      const member = getObjectByPath(members, 'user.id', message.id);
       const speaker = selectID[member?.user?.id];
 
       enqueueTask({ ...message, speaker });
@@ -174,14 +176,14 @@ function App() {
     });
 
     return () => {
-      EventsOff("messageReceived");
+      EventsOff('messageReceived');
     };
   }, [selectID, members, speaker]);
 
   const handleChangeCharacter = (id: string, speaker: string) => {
     setSpeaker((value) => {
       const next = { ...value, [id]: speaker };
-      localStorage.setItem("speaker", JSON.stringify(next));
+      localStorage.setItem('speaker', JSON.stringify(next));
 
       return next;
     });
@@ -189,31 +191,31 @@ function App() {
       const next = {
         ...value,
         [id]:
-          findObjectByKey(voice, "speaker_uuid", speaker)?.styles[0].id || "",
+          findObjectByKey(voice, 'speaker_uuid', speaker)?.styles[0].id || '',
       };
-      localStorage.setItem("selectID", JSON.stringify(next));
+      localStorage.setItem('selectID', JSON.stringify(next));
       return next;
     });
   };
   const handleChangeSelectId = (id: string, speaker: string) => {
-    localStorage.setItem("selectID", JSON.stringify(selectID));
+    localStorage.setItem('selectID', JSON.stringify(selectID));
     setSelectID((value) => ({ ...value, [id]: speaker }));
   };
 
   // メンバー情報取得
   useEffect(() => {
-    selected !== "" &&
+    selected !== '' &&
       GetGuildMembers(selected)
         .then(setMembers)
         .catch((err) => {
           setMembers([{}]);
         });
-    selected === "" && setMembers([]);
+    selected === '' && setMembers([]);
   }, [selected]);
 
   // テーブル
   const mapMember = (
-    <Paper style={{ width: "100%" }}>
+    <Paper style={{ width: '100%' }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -227,7 +229,7 @@ function App() {
             {members.map((member) => (
               <TableRow
                 key={member?.user?.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
                   {member?.user?.global_name || member?.user?.username}
@@ -238,12 +240,12 @@ function App() {
                     onChange={(e) => {
                       handleChangeCharacter(
                         member?.user?.id,
-                        e.target.value || ""
+                        e.target.value || ''
                       );
                     }}
                     inputProps={{
-                      name: "キャラクター",
-                      id: "uncontrolled-server",
+                      name: 'キャラクター',
+                      id: 'uncontrolled-server',
                     }}
                   >
                     <option value="">読み上げなし</option>
@@ -263,13 +265,13 @@ function App() {
                     onChange={(e) => {
                       handleChangeSelectId(
                         member?.user?.id,
-                        e.target.value || ""
+                        e.target.value || ''
                       );
                     }}
                     value={selectID[member?.user.id]}
                     inputProps={{
-                      name: "スタイル",
-                      id: "uncontrolled-server",
+                      name: 'スタイル',
+                      id: 'uncontrolled-server',
                     }}
                   >
                     <option value="">None</option>
@@ -278,9 +280,9 @@ function App() {
                       (
                         findObjectByKey(
                           voice,
-                          "speaker_uuid",
+                          'speaker_uuid',
                           speaker[member?.user?.id]
-                        )?.styles || [{ name: "不明", id: "1" }]
+                        )?.styles || [{ name: '不明', id: '1' }]
                       ).map((style: any) => (
                         <option value={style.id}>{style.name}</option>
                       ))}
@@ -301,8 +303,8 @@ function App() {
           defaultValue={selected}
           onChange={handleChangeServer}
           inputProps={{
-            name: "サーバー",
-            id: "uncontrolled-server",
+            name: 'サーバー',
+            id: 'uncontrolled-server',
           }}
         >
           <option value="">None</option>
@@ -313,7 +315,7 @@ function App() {
           ))}
         </NativeSelect>
       </div>
-      <Button onClick={() => navigate("/bot/token")}>ボット設定</Button>
+      <Button onClick={() => navigate('/bot/token')}>ボット設定</Button>
       <Button onClick={reset}>ボットリセット</Button>
       <div className="p-5">{mapMember}</div>
       <div>

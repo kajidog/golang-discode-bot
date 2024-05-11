@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -14,6 +15,7 @@ var assets embed.FS
 func main() {
 
 	app := NewApp()
+	config := NewConfig()
 
 	err := wails.Run(&options.App{
 		Title:            "VoicePing",
@@ -21,7 +23,10 @@ func main() {
 		Height:           768,
 		Assets:           assets,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
+		OnStartup: func(ctx context.Context) {
+			app.startup(ctx)
+			config.startup(ctx)
+		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId:               "e3984e08-28dc-4e3d-b70a-45e961589cdc",
 			OnSecondInstanceLaunch: app.onSecondInstanceLaunch,
@@ -30,7 +35,7 @@ func main() {
 			OnUrlOpen: app.OnUrlOpen,
 		},
 		Bind: []interface{}{
-			app,
+			app, config,
 		},
 	})
 
