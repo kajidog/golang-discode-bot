@@ -7,4 +7,5 @@ export const storageKeys = {
   USER_REFRESH_TOKEN: 'user-refresh-token',
   USER_TOKEN: 'user-token',
   GPT_TOKEN: 'gpt-token',
+  SELECT_GUILD_ID: 'select-guild-id',
 } as const;
