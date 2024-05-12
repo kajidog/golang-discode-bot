@@ -4,6 +4,9 @@ import (
 	"context"
 	"embed"
 
+	"desktop/internal/app"
+	"desktop/internal/bot"
+
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
@@ -14,7 +17,8 @@ var assets embed.FS
 
 func main() {
 
-	app := NewApp()
+	app := app.NewApp()
+	bot := bot.NewBot()
 	config := NewConfig()
 
 	err := wails.Run(&options.App{
@@ -24,18 +28,19 @@ func main() {
 		Assets:           assets,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
-			app.startup(ctx)
+			app.Startup(ctx)
 			config.startup(ctx)
+			bot.Startup(ctx)
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId:               "e3984e08-28dc-4e3d-b70a-45e961589cdc",
-			OnSecondInstanceLaunch: app.onSecondInstanceLaunch,
+			OnSecondInstanceLaunch: app.OnSecondInstanceLaunch,
 		},
 		Mac: &mac.Options{
 			OnUrlOpen: app.OnUrlOpen,
 		},
 		Bind: []interface{}{
-			app, config,
+			app, config, bot,
 		},
 	})
 

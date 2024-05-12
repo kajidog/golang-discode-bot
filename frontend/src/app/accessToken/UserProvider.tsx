@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { UserContext, authProps } from './UserContext';
 import { storageKeys } from '../../context/storageKeys';
-import { FetchDiscordToken } from '../../../wailsjs/go/main/App';
+import { FetchDiscordToken } from '../../../wailsjs/go/app/App';
 export interface UserProvider {
   children: ReactNode;
 }
