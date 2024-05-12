@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { FetchDiscordToken } from '../../../../wailsjs/go/main/App';
 import { useBot } from '../../../app/bot/BotProvider';
 import { useUser } from '../../../app/accessToken/UserProvider';
 

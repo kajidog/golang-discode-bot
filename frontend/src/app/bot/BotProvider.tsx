@@ -1,13 +1,13 @@
-import React, { ReactNode, useContext, useEffect, useState } from "react";
-import { BotContext } from "./BotContext";
-import { InitializeBot } from "../../../wailsjs/go/main/App";
-import { storageKeys } from "../../context/storageKeys";
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import { BotContext } from './BotContext';
+import { InitializeBot } from '../../../wailsjs/go/bot/Bot';
+import { storageKeys } from '../../context/storageKeys';
 export interface BotProvider {
   children: ReactNode;
 }
 
 export const BotProvider: React.FC<BotProvider> = ({ children }) => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [token, setToken] = useState(
     localStorage.getItem(storageKeys.BOT_TOKEN) || undefined
   );
@@ -30,7 +30,7 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
   };
 
   const signOut = async () => {
-    console.log("sign out");
+    console.log('sign out');
   };
 
   const handleChangeUserToken = (nextToken: string) => {
@@ -49,7 +49,7 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
 
       await InitializeBot(nextToken);
 
-      setError("");
+      setError('');
       setToken(nextToken);
       setClientId(clientId);
       setClientSecret(clientSecret);

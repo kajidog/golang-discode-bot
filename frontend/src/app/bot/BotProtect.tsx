@@ -1,7 +1,7 @@
 import { Link, Navigate, Outlet } from 'react-router-dom';
 import { useBot } from './BotProvider';
 import { useEffect, useState } from 'react';
-import { InitializeBot } from '../../../wailsjs/go/main/App';
+import { InitializeBot } from '../../../wailsjs/go/bot/Bot';
 
 export function Protect() {
   const { token } = useBot();

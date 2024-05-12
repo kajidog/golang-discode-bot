@@ -3,7 +3,7 @@ import { storageKeys } from '../../../context/storageKeys';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { gptSchema } from '../schemas';
-import { InitializeGPT } from '../../../../wailsjs/go/main/App';
+import { InitializeGPT } from '../../../../wailsjs/go/app/App';
 
 export const useChatGPT = () => {
   const [gptToken, setGptToken] = useState(
