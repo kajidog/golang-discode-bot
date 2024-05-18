@@ -16,8 +16,10 @@ type Bot struct {
 	mu      sync.Mutex
 }
 
-func NewBot() *Bot {
-	return &Bot{}
+func NewBot(app *app.App) *Bot {
+	return &Bot{
+		app: app,
+	}
 }
 func (b *Bot) Startup(ctx context.Context) {
 	b.ctx = ctx

@@ -14,14 +14,16 @@ import { discordgo } from '../../../wailsjs/go/models';
 import { useSpeaker } from '../voicevox/useSpeaker';
 import { FetchSpeakers } from '../../../wailsjs/go/app/App';
 import { findObjectByKey } from '../voicevox/speakerUtils';
+import { useMessages } from '../messages/useMessages';
 
 interface GuildMembers {
-  selected: string;
+  guildId: string;
 }
 
-export const GuildMembers: React.FC<GuildMembers> = ({ selected }) => {
+export const GuildMembers: React.FC<GuildMembers> = ({ guildId }) => {
   const [members, setMembers] = useState<discordgo.Member[]>([]);
   const [hasBotJoined, setHasBotJoined] = useState(true);
+  useMessages(guildId);
   const {
     voices,
     setVoices,
@@ -38,8 +40,8 @@ export const GuildMembers: React.FC<GuildMembers> = ({ selected }) => {
   // メンバー情報取得
   useEffect(() => {
     setHasBotJoined(true);
-    selected !== '' &&
-      GetGuildMembers(selected)
+    guildId !== '' &&
+      GetGuildMembers(guildId)
         .then(setMembers)
         .catch((err: string) => {
           if (0 <= err.indexOf(`"code": 10004`)) {
@@ -47,8 +49,8 @@ export const GuildMembers: React.FC<GuildMembers> = ({ selected }) => {
           }
           setMembers([]);
         });
-    selected === '' && setMembers([]);
-  }, [selected]);
+    guildId === '' && setMembers([]);
+  }, [guildId]);
 
   const mapMember = (
     <Paper style={{ width: '100%' }}>

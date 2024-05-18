@@ -6,6 +6,7 @@ import { muiTheme } from '../layout/theme';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { UserProvider } from './accessToken/UserProvider';
+import { MessagesProvider } from './messages/MessagesProvider';
 
 function App() {
   const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -23,7 +24,9 @@ function App() {
         <CssBaseline />
         <BotProvider>
           <UserProvider>
-            <RouterComponent />
+            <MessagesProvider>
+              <RouterComponent />
+            </MessagesProvider>
           </UserProvider>
         </BotProvider>
       </ThemeProvider>

@@ -11,7 +11,9 @@ import (
 type MessageEvent struct {
 	Id       string `json:"id"`
 	Username string `json:"username"`
+	UserId   string `json:"user_id"`
 	Content  string `json:"content"`
+	GuildId  string `json:"guild_id"`
 }
 
 func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -33,7 +35,9 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 	messageEvent := MessageEvent{
 		Id:       m.Author.ID,
 		Username: m.Author.GlobalName,
+		UserId:   m.Author.ID,
 		Content:  messageContent,
+		GuildId:  m.GuildID,
 	}
 	runtime.EventsEmit(bot.ctx, "messageReceived", messageEvent)
 

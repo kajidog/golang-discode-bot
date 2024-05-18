@@ -18,7 +18,7 @@ var assets embed.FS
 func main() {
 
 	app := app.NewApp()
-	bot := bot.NewBot()
+	bot := bot.NewBot(app)
 	config := NewConfig()
 
 	err := wails.Run(&options.App{
