@@ -1,7 +1,6 @@
 import { Button, Tab, Tabs } from '@mui/material';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { storageKeys } from '../context/storageKeys';
-import { useBot } from '../app/bot/BotProvider';
 import { useNavigate } from 'react-router-dom';
 import { useChatGPT } from '../features/BotToken/hooks/useChatGPT';
 import { useGuilds } from '../features/guilds/useGuilds';
@@ -13,7 +12,6 @@ function App() {
   );
   const { fetchUserGuilds, userGuilds } = useGuilds();
   void useChatGPT();
-  const { reset } = useBot();
   const navigate = useNavigate();
 
   // 表示するサーバ変更
@@ -32,7 +30,9 @@ function App() {
   return (
     <div>
       <Button onClick={() => navigate('/bot/token')}>ボット設定</Button>
-      <Button onClick={reset}>ボットリセット</Button>
+      <Button onClick={() => navigate('/setting/user_dictionary')}>
+        ユーザー辞書
+      </Button>
       <div className="p-5">
         <Tabs
           scrollButtons

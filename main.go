@@ -6,6 +6,7 @@ import (
 
 	"desktop/internal/app"
 	"desktop/internal/bot"
+	"desktop/internal/settings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -17,7 +18,8 @@ var assets embed.FS
 
 func main() {
 
-	app := app.NewApp()
+	settings := settings.NewApp()
+	app := app.NewApp(settings)
 	bot := bot.NewBot(app)
 	config := NewConfig()
 
@@ -31,6 +33,7 @@ func main() {
 			app.Startup(ctx)
 			config.startup(ctx)
 			bot.Startup(ctx)
+			settings.Startup(ctx)
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId:               "e3984e08-28dc-4e3d-b70a-45e961589cdc",
@@ -40,7 +43,7 @@ func main() {
 			OnUrlOpen: app.OnUrlOpen,
 		},
 		Bind: []interface{}{
-			app, config, bot,
+			app, config, bot, settings,
 		},
 	})
 
