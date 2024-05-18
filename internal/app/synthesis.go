@@ -48,11 +48,11 @@ func (a *App) FetchSpeakers() ([]Speaker, error) {
 
 func (a *App) SynthesizeAudio(text string, speaker string) ([]byte, error) {
 	client := &http.Client{}
-
+	replaceText, _ := a.settings.ReplaceWords(text)
 	baseQueryURL := "http://localhost:50021/audio_query"
 	queryParams := url.Values{}
 	queryParams.Set("speaker", speaker)
-	queryParams.Set("text", text)
+	queryParams.Set("text", replaceText)
 	queryURL := baseQueryURL + "?" + queryParams.Encode()
 
 	queryResp, err := client.Post(queryURL, "application/json", nil)

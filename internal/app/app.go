@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"desktop/internal/settings"
 	"sync"
 
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -13,11 +14,14 @@ type App struct {
 	Messages []Message
 	mu       sync.Mutex
 	gpt      string
+	settings *settings.Settings
 }
 
 // NewApp creates a new App application struct
-func NewApp() *App {
-	return &App{}
+func NewApp(setting *settings.Settings) *App {
+	return &App{
+		settings: setting,
+	}
 }
 
 // startup is called at application startup
