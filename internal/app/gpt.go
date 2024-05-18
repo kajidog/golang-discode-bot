@@ -21,7 +21,7 @@ func (a *App) ChatWithGPT(prompt string) (string, error) {
 	url := "https://api.openai.com/v1/chat/completions"
 	body := map[string]interface{}{
 		"messages": a.Messages,
-		"model":    "gpt-4-turbo",
+		"model":    "gpt-4o",
 	}
 	jsonData, err := json.Marshal(body)
 	if err != nil {
