@@ -6,31 +6,35 @@ voicevox を使用し、ユーザーごとに音声設定可能
 ## 使用言語・フレームワーク・その他
 
 - wails cli v2.8.1
-- golang v1.20
+- golang v1.21.10
 - node v20.12.2
-- docker-compose
 - taskfile v3
+- voicevox engin
+
+Windows
 
 ```bash
 winget install Task.Task
 ```
 
-## 環境構築
-
-### docker
+macOS
 
 ```bash
-docker compose up
+brew install go-task/tap/go-task
 ```
 
-### node
+## 環境構築
+
+GoとNode.jsをインストールして以下のコマンドを実行
 
 ```bash
-npm i
+task init
 ```
 
 ## 開発
 
-```
-wails dev
+voicevox enginを`localhost:50021`で起動させた状態で以下のコマンドを実行
+
+```bash
+task dev
 ```
