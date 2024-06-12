@@ -6,6 +6,8 @@ import Home from '../../pages/Home';
 import TokenSetting from '../../pages/TokenSetting';
 import UserProtect from '../accessToken/UserProtect';
 import UserDictionary from '../../pages/setting/UserDoctonary';
+import { Layout } from '../../layout/Layout';
+import SoundPage from '../../pages/SoundPage';
 
 type RouterProps = {};
 
@@ -14,7 +16,10 @@ const RouterComponent: React.FC<RouterProps> = ({}) => {
     <Routes>
       <Route path="/" element={<BotProtect />}>
         <Route path="/" element={<UserProtect />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/sound" element={<SoundPage />} />
+          </Route>
         </Route>
       </Route>
       <Route path="/bot">

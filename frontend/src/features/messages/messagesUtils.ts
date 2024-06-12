@@ -5,7 +5,7 @@ export const createGuildMessageCallback = (
   callback: (message: MessageEvent) => void
 ) => {
   return (message: MessageEvent) => {
-    if (message.guild_id === guildId) {
+    if (message.guild_id === guildId || guildId === '*') {
       callback(message);
     }
   };

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"desktop/internal/app"
+	"fmt"
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,6 +15,12 @@ type Bot struct {
 	app     *app.App
 	ctx     context.Context
 	mu      sync.Mutex
+}
+
+// BotInfo struct to hold bot's username and avatar URL
+type BotInfo struct {
+	Username  string `json:"username"`
+	AvatarURL string `json:"avatarURL"`
 }
 
 func NewBot(app *app.App) *Bot {
@@ -42,7 +49,21 @@ func (bot *Bot) Start(token string) error {
 	return nil
 }
 
-func (bot *Bot) InitializeBot(token string) error {
+// GetBotInfo retrieves the bot's username and avatar URL
+func (bot *Bot) GetBotInfo() (*BotInfo, error) {
+	u, err := bot.session.User("@me")
+	if err != nil {
+		return nil, err
+	}
+
+	avatarURL := fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", u.ID, u.Avatar)
+	return &BotInfo{
+		Username:  u.Username,
+		AvatarURL: avatarURL,
+	}, nil
+}
+
+func (bot *Bot) InitializeBot(token string) (*BotInfo, error) {
 	bot.mu.Lock()
 
 	if bot != nil && bot.session != nil {
@@ -53,10 +74,16 @@ func (bot *Bot) InitializeBot(token string) error {
 
 	if err != nil {
 		defer bot.mu.Unlock()
-		return err
+		return nil, err
+	}
+
+	botInfo, err := bot.GetBotInfo()
+
+	if err != nil {
+		defer bot.mu.Unlock()
+		return nil, err
 	}
 
 	defer bot.mu.Unlock()
-
-	return nil
+	return botInfo, nil
 }

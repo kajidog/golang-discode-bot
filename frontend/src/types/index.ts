@@ -1,3 +1,5 @@
+import { app } from '../../wailsjs/go/models';
+
 export type MessageEvent = {
   username: string;
   user_id: string;
@@ -6,3 +8,5 @@ export type MessageEvent = {
   speaker: string;
   guild_id: string;
 };
+
+export type UserInfo = app.UserInfo;

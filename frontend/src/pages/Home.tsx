@@ -1,53 +1,73 @@
-import { Button, Tab, Tabs } from '@mui/material';
-import { SyntheticEvent, useEffect, useState } from 'react';
-import { storageKeys } from '../context/storageKeys';
-import { useNavigate } from 'react-router-dom';
-import { useChatGPT } from '../features/BotToken/hooks/useChatGPT';
-import { useGuilds } from '../features/guilds/useGuilds';
-import { GuildMembers } from '../features/guilds/GuildMembers';
-
+import { Breadcrumbs, Link, Typography } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 function App() {
-  const [selected, setSelected] = useState<string>(
-    () => localStorage.getItem(storageKeys.SELECT_GUILD_ID) || ''
-  );
-  const { fetchUserGuilds, userGuilds } = useGuilds();
-  void useChatGPT();
-  const navigate = useNavigate();
+  // const { botInfo } = useBot();
+  // const navigate = useNavigate();
 
-  // 表示するサーバ変更
-  const handleChangeServer = (
-    _: SyntheticEvent<Element, Event>,
-    value: any
-  ) => {
-    localStorage.setItem(storageKeys.SELECT_GUILD_ID, String(value));
-    setSelected(value);
-  };
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  // const open = Boolean(anchorEl);
+  // const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
 
-  useEffect(() => {
-    fetchUserGuilds(); // ユーザーが参加しているサーバ読み込み
-  }, []);
+  // const shapeStyles = { bgcolor: 'primary.main', width: 60, height: 60 };
+  // const shapeCircleStyles = { borderRadius: '50%' };
+  // const circle = (
+  //   <Box
+  //     component="img"
+  //     src={botInfo.avatarURL}
+  //     sx={{ ...shapeStyles, ...shapeCircleStyles }}
+  //   />
+  // );
+
+  // const card = (
+  //   <React.Fragment>
+  //     <CardContent>
+  //       <Badge color="secondary" overlap="circular" badgeContent="43">
+  //         {circle}
+  //       </Badge>
+  //       <Typography variant="h6" component="div"></Typography>
+  //     </CardContent>
+
+  //     <CardActions>
+  //       <Button size="small" onClick={() => navigate('/bot/token')}>
+  //         設定
+  //       </Button>
+  //       <Button onClick={() => navigate('/setting/user_dictionary')}>
+  //         ユーザー辞書
+  //       </Button>
+  //       <Button
+  //         id="basic-button"
+  //         aria-controls={open ? 'basic-menu' : undefined}
+  //         aria-haspopup="true"
+  //         aria-expanded={open ? 'true' : undefined}
+  //         onClick={handleClick}
+  //       >
+  //         GPTモデル
+  //       </Button>
+  //       <Menu
+  //         id="basic-menu"
+  //         anchorEl={anchorEl}
+  //         open={open}
+  //         onClose={handleClose}
+  //         MenuListProps={{
+  //           'aria-labelledby': 'basic-button',
+  //         }}
+  //       >
+  //         <GptModelsMenu></GptModelsMenu>
+  //       </Menu>
+  //     </CardActions>
+  //   </React.Fragment>
+  // );
 
   return (
     <div>
-      <Button onClick={() => navigate('/bot/token')}>ボット設定</Button>
-      <Button onClick={() => navigate('/setting/user_dictionary')}>
-        ユーザー辞書
-      </Button>
-      <div className="p-5">
-        <Tabs
-          scrollButtons
-          allowScrollButtonsMobile
-          value={selected}
-          textColor="primary"
-          indicatorColor="secondary"
-          onChange={handleChangeServer}
-        >
-          {userGuilds.map((guild) => (
-            <Tab label={guild?.name} value={guild.id} key={guild.id} />
-          ))}
-        </Tabs>
-      </div>
-      <GuildMembers guildId={selected}></GuildMembers>
+      <Breadcrumbs aria-label="breadcrumb">
+        <div>/</div>
+      </Breadcrumbs>
     </div>
   );
 }
