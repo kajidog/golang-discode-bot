@@ -46,6 +46,7 @@ export const useSpeakerStore = create<SpeakerStore>((set) => ({
     }),
 }));
 
+// voiceboxのspeaker使う
 export const useSpeaker = () => {
   const {
     setVoices,
@@ -56,10 +57,13 @@ export const useSpeaker = () => {
     selectVoiceId,
   } = useSpeakerStore();
 
+  // 選択中のキャラクター変更
   const handleChangeCharacter = (id: string, speaker: string) => {
-    setSelectVoiceId(id, speaker);
+    setSelectVoiceId(id, speaker); // スピーカーもデフォルトに変更
     setSelectCharacterId(id, speaker);
   };
+
+  // 選択中のSpeaker変更
   const handleChangeVoice = setSelectVoiceId;
 
   return {
