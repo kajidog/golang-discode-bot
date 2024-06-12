@@ -47,6 +47,9 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		cleanContent := strings.ReplaceAll(m.Content, "<@"+s.State.User.ID+">", "")
 		cleanContent = strings.TrimSpace(cleanContent)
 
+		// 入力中を設定
+		s.ChannelTyping(m.ChannelID)
+
 		// ChatGPTに送信
 		response, _ := bot.app.ChatWithGPT(cleanContent)
 
