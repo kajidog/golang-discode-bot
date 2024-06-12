@@ -10,7 +10,16 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func (a *App) GetUserGuilds(token string) ([]*discordgo.UserGuild, error) {
+type UserInfo struct {
+	AvatarURL string `json:"avatarURL"`
+}
+
+type UserGuildWithIcon struct {
+	discordgo.UserGuild
+	IconURL string `json:"iconURL"`
+}
+
+func (a *App) GetUserGuilds(token string) ([]UserGuildWithIcon, error) {
 	dg, err := discordgo.New("Bearer " + token)
 	if err != nil {
 		return nil, err
@@ -21,7 +30,16 @@ func (a *App) GetUserGuilds(token string) ([]*discordgo.UserGuild, error) {
 		return nil, fmt.Errorf("failed to get guilds: %w", err)
 	}
 
-	return guilds, nil
+	var guildInfos []UserGuildWithIcon
+	for _, guild := range guilds {
+		iconURL := discordgo.EndpointGuildIcon(guild.ID, guild.Icon)
+		guildInfos = append(guildInfos, UserGuildWithIcon{
+			UserGuild: *guild,
+			IconURL:   iconURL,
+		})
+	}
+
+	return guildInfos, nil
 }
 
 func (a *App) FetchDiscordToken(clientID, clientSecret, code, redirectURI string) (string, error) {
@@ -51,4 +69,19 @@ func (a *App) FetchDiscordToken(clientID, clientSecret, code, redirectURI string
 	}
 
 	return string(body), nil
+}
+
+func (a *App) GetDiscordAvatar(token string) (UserInfo, error) {
+	dg, err := discordgo.New("Bearer " + token)
+	if err != nil {
+		return UserInfo{}, err
+	}
+
+	user, err := dg.User("@me")
+	if err != nil {
+		return UserInfo{}, err
+	}
+
+	avatarURL := user.AvatarURL("1024")
+	return UserInfo{avatarURL}, nil
 }
