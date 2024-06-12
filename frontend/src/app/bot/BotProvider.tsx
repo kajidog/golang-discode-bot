@@ -2,11 +2,16 @@ import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { BotContext } from './BotContext';
 import { InitializeBot } from '../../../wailsjs/go/bot/Bot';
 import { storageKeys } from '../../context/storageKeys';
+import { bot } from '../../../wailsjs/go/models';
 export interface BotProvider {
   children: ReactNode;
 }
 
 export const BotProvider: React.FC<BotProvider> = ({ children }) => {
+  const [botInfo, setBotInfo] = useState<bot.BotInfo>({
+    username: '',
+    avatarURL: '',
+  });
   const [error, setError] = useState('');
   const [token, setToken] = useState(
     localStorage.getItem(storageKeys.BOT_TOKEN) || undefined
@@ -72,6 +77,8 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
       value={{
         signOut,
         setBotSetting: handleChangeToken,
+        botInfo,
+        setBotInfo,
         token,
         redirectURI,
         clientId,

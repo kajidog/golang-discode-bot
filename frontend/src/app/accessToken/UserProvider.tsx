@@ -2,12 +2,16 @@ import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { UserContext, authProps } from './UserContext';
 import { storageKeys } from '../../context/storageKeys';
 import { FetchDiscordToken } from '../../../wailsjs/go/app/App';
+import { UserInfo } from '../../types';
 export interface UserProvider {
   children: ReactNode;
 }
 
 export const UserProvider: React.FC<UserProvider> = ({ children }) => {
   const [error, setError] = useState('');
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    avatarURL: '',
+  });
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem(storageKeys.USER_ACCESS_TOKEN) || undefined
   );
@@ -55,9 +59,12 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
       return false;
     }
   };
+
   return (
     <UserContext.Provider
       value={{
+        userInfo,
+        setUserInfo,
         errorMessage: error,
         reset,
         accessToken,
