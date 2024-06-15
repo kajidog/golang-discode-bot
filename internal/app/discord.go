@@ -11,7 +11,8 @@ import (
 )
 
 type UserInfo struct {
-	AvatarURL string `json:"avatarURL"`
+	AvatarURL string          `json:"avatarURL"`
+	Other     *discordgo.User `json:"other"`
 }
 
 type UserGuildWithIcon struct {
@@ -83,5 +84,8 @@ func (a *App) GetDiscordAvatar(token string) (UserInfo, error) {
 	}
 
 	avatarURL := user.AvatarURL("1024")
-	return UserInfo{avatarURL}, nil
+	return UserInfo{
+		AvatarURL: avatarURL,
+		Other:     user,
+	}, nil
 }
