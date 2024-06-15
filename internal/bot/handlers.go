@@ -54,6 +54,6 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		response, _ := bot.app.ChatWithGPT(cleanContent)
 
 		// Discordに返信
-		s.ChannelMessageSend(m.ChannelID, response)
+		SendMessage(s, m.ChannelID, response)
 	}
 }
