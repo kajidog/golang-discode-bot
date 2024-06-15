@@ -1,7 +1,10 @@
 import { css } from '@emotion/react';
 import {
+  Avatar,
   Badge,
   Box,
+  CardHeader,
+  Divider,
   Drawer,
   IconButton,
   List,
@@ -16,6 +19,7 @@ import { useUser } from '../app/accessToken/UserProvider';
 import GraphicEqOutlinedIcon from '@mui/icons-material/GraphicEqOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import { useSideMenu } from '../features/menu/useSideMenu';
+import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 export interface Header {}
 
 const styles = {
@@ -38,19 +42,26 @@ const styles = {
 export const Header: React.FC<Header> = () => {
   const { menus, changeMenu } = useSideMenu();
   const [open, setOpen] = React.useState(false);
+  const [isOpenUserMenu, setIsOpenUserMenu] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 
-  const { userInfo } = useUser();
+  const { userInfo, signOut } = useUser();
   const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
   const shapeCircleStyles = { borderRadius: '50%' };
   const circle = (
     <Box
+      css={{
+        cursor: 'pointer',
+      }}
       component="img"
-      src={userInfo.avatarURL}
+      src={userInfo?.avatarURL}
       sx={{ ...shapeStyles, ...shapeCircleStyles }}
+      onClick={() => {
+        setIsOpenUserMenu(true);
+      }}
     />
   );
 
@@ -74,6 +85,45 @@ export const Header: React.FC<Header> = () => {
       </List>
     </Box>
   );
+  const DrawerUserMenu = (
+    <Box
+      sx={{
+        width: 200,
+        height: '100%',
+        bgcolor: 'rgb(20, 20, 43)',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      role="presentation"
+      onClick={() => setIsOpenUserMenu(false)}
+    >
+      <div>
+        <CardHeader
+          avatar={<Avatar src={userInfo?.avatarURL} />}
+          title={userInfo?.other?.global_name}
+          subheader={userInfo?.other?.username}
+        />
+      </div>
+      <Divider />
+      <div>
+        <List css={{ display: 'flex', flexDirection: 'column' }}>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                signOut();
+                setIsOpenUserMenu(false);
+              }}
+            >
+              <ListItemIcon>
+                <ExitToAppRoundedIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sign out" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </div>
+    </Box>
+  );
 
   return (
     <div css={styles.main}>
@@ -92,6 +142,14 @@ export const Header: React.FC<Header> = () => {
       <Badge color="primary" overlap="circular">
         {circle}
       </Badge>
+      <Drawer
+        anchor="right"
+        open={isOpenUserMenu}
+        onClose={() => setIsOpenUserMenu(false)}
+        variant="temporary"
+      >
+        {DrawerUserMenu}
+      </Drawer>
     </div>
   );
 };
