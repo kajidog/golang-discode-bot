@@ -2,12 +2,13 @@ import { createContext } from 'react';
 import { UserInfo } from '../../types';
 
 interface UserContext {
-  userInfo: UserInfo;
+  userInfo?: UserInfo;
   setUserInfo: (userInfo: UserInfo) => void;
   checkOauthCode: (authProps: authProps) => Promise<boolean>;
   errorMessage?: string;
   reset: () => void;
   accessToken?: string;
+  signOut: () => void;
 }
 
 export interface authProps {

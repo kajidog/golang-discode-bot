@@ -9,9 +9,7 @@ export interface UserProvider {
 
 export const UserProvider: React.FC<UserProvider> = ({ children }) => {
   const [error, setError] = useState('');
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    avatarURL: '',
-  });
+  const [userInfo, setUserInfo] = useState<UserInfo>();
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem(storageKeys.USER_ACCESS_TOKEN) || undefined
   );
@@ -22,6 +20,10 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
   const reset = () => {
     localStorage.removeItem(storageKeys.USER_ACCESS_TOKEN);
     setAccessToken(undefined);
+  };
+
+  const signOut = () => {
+    reset();
   };
 
   // アクセストークンを取得
@@ -69,6 +71,7 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
         reset,
         accessToken,
         checkOauthCode,
+        signOut,
       }}
     >
       {children}
