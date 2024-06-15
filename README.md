@@ -9,7 +9,7 @@ voicevox を使用し、ユーザーごとに音声設定可能
 - golang v1.21.10
 - node v20.12.2
 - taskfile v3
-- voicevox engin
+- voicevox engin https://voicevox.hiroshiba.jp/
 
 Windows
 
