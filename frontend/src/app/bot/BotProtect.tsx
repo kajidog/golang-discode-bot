@@ -8,6 +8,10 @@ export function Protect() {
   const { token, setBotInfo, botInfo } = useBot();
   const [loading, setLading] = useState<boolean | null>(null);
   useEffect(() => {
+    if (loading) {
+      return;
+    }
+    setLading(true);
     if (!token || botInfo.username !== '') {
       setLading(false);
       return;
