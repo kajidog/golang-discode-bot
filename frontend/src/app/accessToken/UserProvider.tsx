@@ -1,13 +1,18 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { UserContext, authProps } from './UserContext';
 import { storageKeys } from '../../context/storageKeys';
-import { FetchDiscordToken } from '../../../wailsjs/go/app/App';
+import {
+  FetchDiscordToken,
+  RefreshDiscordToken,
+} from '../../../wailsjs/go/app/App';
 import { UserInfo } from '../../types';
+import { useBot } from '../bot/BotProvider';
 export interface UserProvider {
   children: ReactNode;
 }
 
 export const UserProvider: React.FC<UserProvider> = ({ children }) => {
+  const { clientId, clientSecret } = useBot();
   const [error, setError] = useState('');
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [accessToken, setAccessToken] = useState(
@@ -24,6 +29,25 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
 
   const signOut = () => {
     reset();
+  };
+
+  const handleRefreshAccessToken = async () => {
+    if (!clientId || !clientSecret || !refreshToken) {
+      return;
+    }
+    const { access_token, refresh_token } = await RefreshDiscordToken(
+      clientId!,
+      clientSecret!,
+      refreshToken!
+    );
+    if (!access_token || !refresh_token) {
+      throw new Error('Access token notfound');
+    }
+    setAccessToken(access_token);
+    localStorage.setItem(storageKeys.USER_ACCESS_TOKEN, access_token);
+
+    setRefreshToken(refresh_token);
+    localStorage.setItem(storageKeys.USER_REFRESH_TOKEN, refresh_token);
   };
 
   // アクセストークンを取得
@@ -72,6 +96,7 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
         accessToken,
         checkOauthCode,
         signOut,
+        handleRefreshAccessToken,
       }}
     >
       {children}

@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { FetchSpeakers } from '../../wailsjs/go/app/App';
 import { useMessages } from '../features/messages/useMessages';
 import { useGuilds } from '../features/guilds/useGuilds';
+import { useUser } from '../app/accessToken/UserProvider';
 const styles = {
   header: css({
     width: '100%',
@@ -40,10 +41,13 @@ export const Layout = () => {
 
   const { fetchUserGuilds } = useGuilds();
   const { setVoices } = useSpeaker();
+  const { userInfo } = useUser();
   useEffect(() => {
-    fetchUserGuilds();
-    FetchSpeakers().then(setVoices);
-  }, []);
+    if (userInfo) {
+      fetchUserGuilds();
+      FetchSpeakers().then(setVoices);
+    }
+  }, [userInfo]);
 
   return (
     <>

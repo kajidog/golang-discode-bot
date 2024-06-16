@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,6 +19,11 @@ type UserInfo struct {
 type UserGuildWithIcon struct {
 	discordgo.UserGuild
 	IconURL string `json:"iconURL"`
+}
+
+type TokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 func (a *App) GetUserGuilds(token string) ([]UserGuildWithIcon, error) {
@@ -88,4 +94,34 @@ func (a *App) GetDiscordAvatar(token string) (UserInfo, error) {
 		AvatarURL: avatarURL,
 		Other:     user,
 	}, nil
+}
+
+func (a *App) RefreshDiscordToken(clientID, clientSecret, refreshToken string) (TokenResponse, error) {
+	// Discordのトークンエンドポイント
+	url := "https://discord.com/api/oauth2/token"
+
+	// データをURLエンコードする
+	data := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s",
+		clientID, clientSecret, refreshToken)
+	payload := strings.NewReader(data)
+
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		return TokenResponse{}, err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return TokenResponse{}, err
+	}
+	defer res.Body.Close()
+
+	var tokenResponse TokenResponse
+	if err := json.NewDecoder(res.Body).Decode(&tokenResponse); err != nil {
+		return TokenResponse{}, err
+	}
+
+	return tokenResponse, nil
 }
