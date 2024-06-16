@@ -11,7 +11,7 @@ export function Protect() {
     if (loading) {
       return;
     }
-    setLading(false);
+    setLading(true);
     if (!token || botInfo.username !== '') {
       setLading(false);
       return;
