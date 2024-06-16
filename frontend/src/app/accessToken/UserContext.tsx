@@ -9,6 +9,7 @@ interface UserContext {
   reset: () => void;
   accessToken?: string;
   signOut: () => void;
+  handleRefreshAccessToken: () => Promise<void>;
 }
 
 export interface authProps {
