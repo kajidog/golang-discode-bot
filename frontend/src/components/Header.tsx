@@ -48,7 +48,7 @@ export const Header: React.FC<Header> = () => {
     setOpen(newOpen);
   };
 
-  const { userInfo, signOut } = useUser();
+  const { userInfo, signOut, accessToken } = useUser();
   const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
   const shapeCircleStyles = { borderRadius: '50%' };
   const circle = (
@@ -136,7 +136,7 @@ export const Header: React.FC<Header> = () => {
       <div css={styles.logo}>
         <GraphicEqOutlinedIcon />
         <Typography variant="h6" component="div">
-          voice-ping
+          voice-ping {accessToken}
         </Typography>
       </div>
       <Badge color="primary" overlap="circular">
