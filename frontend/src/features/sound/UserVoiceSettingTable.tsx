@@ -23,14 +23,7 @@ const style = {
 export const UserVoiceSettingTable = () => {
   const { selectedGuildId: guildId } = useGuildsTab();
 
-  const {
-    voices,
-    setVoices,
-    handleChangeVoice,
-    handleChangeCharacter,
-    selectCharacterId,
-    selectVoiceId,
-  } = useSpeaker();
+  const speaker = useSpeaker();
 
   const { members, hasBotJoined } = useGuildMembers(guildId);
 
@@ -51,12 +44,7 @@ export const UserVoiceSettingTable = () => {
                 key={'row_' + member?.user?.id}
                 {...{
                   member,
-                  voices,
-                  setVoices,
-                  handleChangeVoice,
-                  handleChangeCharacter,
-                  selectCharacterId,
-                  selectVoiceId,
+                  ...speaker,
                 }}
               />
             ))}

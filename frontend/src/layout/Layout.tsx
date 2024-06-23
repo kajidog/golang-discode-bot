@@ -53,12 +53,6 @@ export const Layout = () => {
         </div>
         <Divider />
         <div css={styles.main}>
-          <div css={styles.sideMenu}>
-            <SideMenu />
-          </div>
-          <div>
-            <Divider orientation="vertical" />
-          </div>
           <div css={styles.content}>
             <Outlet />
           </div>
