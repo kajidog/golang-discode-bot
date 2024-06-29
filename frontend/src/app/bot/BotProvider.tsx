@@ -1,36 +1,36 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 import { BotContext } from './BotContext';
 import { InitializeBot } from '../../../wailsjs/go/bot/Bot';
 import { storageKeys } from '../../context/storageKeys';
 import { bot } from '../../../wailsjs/go/models';
-export interface BotProvider {
+
+export interface BotProviderProps {
   children: ReactNode;
 }
 
-export const BotProvider: React.FC<BotProvider> = ({ children }) => {
+export const BotProvider: React.FC<BotProviderProps> = ({ children }) => {
   const [botInfo, setBotInfo] = useState<bot.BotInfo>({
     username: '',
     avatarURL: '',
   });
   const [error, setError] = useState('');
-  const [token, setToken] = useState(
-    localStorage.getItem(storageKeys.BOT_TOKEN) || undefined
-  );
+  const [token, setToken] = useState(Cookies.get(storageKeys.BOT_TOKEN));
   const [userToken, setUserToken] = useState(
-    localStorage.getItem(storageKeys.USER_TOKEN) || undefined
+    Cookies.get(storageKeys.USER_TOKEN)
   );
   const [clientId, setClientId] = useState(
-    localStorage.getItem(storageKeys.BOT_CLIENT_ID) || undefined
+    Cookies.get(storageKeys.BOT_CLIENT_ID)
   );
   const [clientSecret, setClientSecret] = useState(
-    localStorage.getItem(storageKeys.BOT_CLIENT_SECRET) || undefined
+    Cookies.get(storageKeys.BOT_CLIENT_SECRET)
   );
   const [redirectURI, setRedirectURI] = useState(
-    localStorage.getItem(storageKeys.BOT_REDIRECT_URI) || undefined
+    Cookies.get(storageKeys.BOT_REDIRECT_URI)
   );
 
   const reset = () => {
-    localStorage.removeItem(storageKeys.BOT_TOKEN);
+    Cookies.remove(storageKeys.BOT_TOKEN);
     setToken(undefined);
   };
 
@@ -40,7 +40,7 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
 
   const handleChangeUserToken = (nextToken: string) => {
     setUserToken(nextToken);
-    localStorage.setItem(storageKeys.USER_TOKEN, nextToken);
+    Cookies.set(storageKeys.USER_TOKEN, nextToken);
   };
 
   const handleChangeToken = async (
@@ -59,11 +59,10 @@ export const BotProvider: React.FC<BotProvider> = ({ children }) => {
       setClientId(clientId);
       setClientSecret(clientSecret);
       setRedirectURI(redirectURI);
-      localStorage.setItem(storageKeys.BOT_TOKEN, nextToken);
-      localStorage.setItem(storageKeys.BOT_CLIENT_ID, clientId);
-      localStorage.setItem(storageKeys.BOT_CLIENT_SECRET, clientSecret);
-      localStorage.setItem(storageKeys.BOT_REDIRECT_URI, redirectURI);
-      localStorage.setItem(storageKeys.BOT_REDIRECT_URI, redirectURI);
+      Cookies.set(storageKeys.BOT_TOKEN, nextToken);
+      Cookies.set(storageKeys.BOT_CLIENT_ID, clientId);
+      Cookies.set(storageKeys.BOT_CLIENT_SECRET, clientSecret);
+      Cookies.set(storageKeys.BOT_REDIRECT_URI, redirectURI);
 
       return;
     } catch (error) {
