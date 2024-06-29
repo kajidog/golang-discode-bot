@@ -1,33 +1,44 @@
 import { Link, Navigate, Outlet } from 'react-router-dom';
 import { useUser } from './UserProvider';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { GetDiscordAvatar } from '../../../wailsjs/go/app/App';
+import { useEffect } from 'react';
+
+const fetchDiscordAvatar = async (accessToken: string) => {
+  const response = await GetDiscordAvatar(accessToken);
+  return response;
+};
 
 export function UserProtect() {
   const { accessToken, setUserInfo, handleRefreshAccessToken } = useUser();
-  const [loading, setLading] = useState<boolean | null>(false);
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['discordAvatar', accessToken],
+    queryFn: () => fetchDiscordAvatar(accessToken!),
+    enabled: !!accessToken,
+  });
+
   useEffect(() => {
-    if (loading) {
-      return;
-    }
-    setLading(true);
-    if (accessToken) {
-      GetDiscordAvatar(accessToken)
-        .then(setUserInfo)
-        .catch(handleRefreshAccessToken)
-        .finally(() => {
-          setLading(false);
-        });
-    } else {
-      setLading(false);
-    }
-  }, [accessToken]);
+    data && setUserInfo(data);
+  }, [data]);
+
+  useEffect(() => {
+    error && handleRefreshAccessToken();
+  }, [error]);
+
   // トークンが設定されてない場合は設定画面へ
   if (!accessToken) {
     return <Navigate to="/bot/token" />;
   }
-  if (loading || loading === null) {
-    return <div>loading</div>;
+
+  // ローディング中の表示
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // エラーハンドリング
+  if (error) {
+    return <div>Error loading user information</div>;
   }
 
   return <Outlet />;

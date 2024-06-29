@@ -10,33 +10,38 @@ import { MessagesContext } from './MessagesContext';
 import { EventsOff, EventsOn } from '../../../wailsjs/runtime/runtime';
 import { MessageEvent } from '../../types';
 
-export interface MessagesProvider {
+export interface MessagesProviderProps {
   children: ReactNode;
 }
 
-export const MessagesProvider: React.FC<MessagesProvider> = ({ children }) => {
+export const MessagesProvider: React.FC<MessagesProviderProps> = ({
+  children,
+}) => {
   const [messages, setMessages] = useState<{
     [guildId: string]: MessageEvent[];
   }>({});
   const callbacksRef = useRef<Set<(message: MessageEvent) => void>>(new Set());
 
   useEffect(() => {
-    // Wailsからメッセージを受信
-    EventsOn('messageReceived', (message: MessageEvent) => {
+    const handleMessageReceived = (message: MessageEvent) => {
       setMessages((prevMessages) => ({
+        ...prevMessages,
         [message.guild_id]: [
           ...(prevMessages[message.guild_id] || []),
-          { ...message },
+          message,
         ],
       }));
       callbacksRef.current.forEach((callback) => callback(message));
-    });
+    };
+
+    // Wailsからメッセージを受信
+    EventsOn('messageReceived', handleMessageReceived);
+
     return () => {
       EventsOff('messageReceived');
     };
   }, []);
 
-  // 各コンポーネントでメッセージ受信のコールバック設定
   const registerCallback = useCallback(
     (callback: (message: MessageEvent) => void) => {
       callbacksRef.current.add(callback);
@@ -44,7 +49,6 @@ export const MessagesProvider: React.FC<MessagesProvider> = ({ children }) => {
     []
   );
 
-  // 各コンポーネントでメッセージ受信のコールバック解除
   const unregisterCallback = useCallback(
     (callback: (message: MessageEvent) => void) => {
       callbacksRef.current.delete(callback);
@@ -54,11 +58,7 @@ export const MessagesProvider: React.FC<MessagesProvider> = ({ children }) => {
 
   return (
     <MessagesContext.Provider
-      value={{
-        messages,
-        registerCallback,
-        unregisterCallback,
-      }}
+      value={{ messages, registerCallback, unregisterCallback }}
     >
       {children}
     </MessagesContext.Provider>
