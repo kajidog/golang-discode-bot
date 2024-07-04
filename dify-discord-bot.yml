@@ -1,0 +1,344 @@
+app:
+  description: ''
+  icon: "\U0001F916"
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: discord-bot
+workflow:
+  features:
+    file_upload:
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+          - local_file
+          - remote_url
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          sourceType: tool
+          targetType: answer
+        id: 1719780117765-source-1719771445935-target
+        source: '1719780117765'
+        sourceHandle: source
+        target: '1719771445935'
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: start
+          targetType: question-classifier
+        id: 1719769129218-source-1719771072412-target
+        selected: false
+        source: '1719769129218'
+        sourceHandle: source
+        target: '1719771072412'
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: llm
+          targetType: tool
+        id: 1719779493089-source-1719780117765-target
+        source: '1719779493089'
+        sourceHandle: source
+        target: '1719780117765'
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: llm
+          targetType: answer
+        id: llm-source-answer-target
+        source: llm
+        sourceHandle: source
+        target: answer
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: question-classifier
+          targetType: llm
+        id: 1719771072412-1-1719779493089-target
+        source: '1719771072412'
+        sourceHandle: '1'
+        target: '1719779493089'
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: question-classifier
+          targetType: llm
+        id: 1719771072412-2-llm-target
+        source: '1719771072412'
+        sourceHandle: '2'
+        target: llm
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          desc: ''
+          selected: false
+          title: "\u958B\u59CB"
+          type: start
+          variables: []
+        height: 53
+        id: '1719769129218'
+        position:
+          x: 30
+          y: 292
+        positionAbsolute:
+          x: 30
+          y: 292
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          context:
+            enabled: false
+            variable_selector: []
+          desc: ''
+          memory:
+            query_prompt_template: '{{#sys.query#}}'
+            role_prefix:
+              assistant: ''
+              user: ''
+            window:
+              enabled: false
+              size: 10
+          model:
+            completion_params:
+              temperature: 0.7
+            mode: chat
+            name: gpt-3.5-turbo
+            provider: openai
+          prompt_template:
+            - id: 2a283d5f-bc8d-4026-8652-3567ce917993
+              role: system
+              text: ''
+          selected: false
+          title: LLM 2
+          type: llm
+          variables: []
+          vision:
+            enabled: false
+        height: 97
+        id: llm
+        position:
+          x: 638
+          y: 292
+        positionAbsolute:
+          x: 638
+          y: 292
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          answer: '{{#llm.text#}}'
+          desc: ''
+          selected: false
+          title: "\u56DE\u7B54"
+          type: answer
+          variables: []
+        height: 106
+        id: answer
+        position:
+          x: 942
+          y: 323
+        positionAbsolute:
+          x: 942
+          y: 323
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          classes:
+            - id: '1'
+              name:
+                "\u753B\u50CF\u751F\u6210\u3092\u4F9D\u983C\u3057\u3066\u3044\u308B\
+                \u304B\uFF1F"
+            - id: '2'
+              name: "\u305D\u306E\u4ED6"
+          desc: ''
+          instructions: ''
+          memory:
+            query_prompt_template: ''
+            window:
+              enabled: true
+              size: 7
+          model:
+            completion_params:
+              temperature: 0.7
+            mode: chat
+            name: gemini-1.5-flash-latest
+            provider: google
+          query_variable_selector:
+            - sys
+            - query
+          selected: false
+          title: "\u8CEA\u554F\u5206\u985E\u5668"
+          topics: []
+          type: question-classifier
+        height: 183
+        id: '1719771072412'
+        position:
+          x: 334
+          y: 292
+        positionAbsolute:
+          x: 334
+          y: 292
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          answer: '{{#1719780117765.files#}}'
+          desc: ''
+          selected: false
+          title: "\u56DE\u7B54 2"
+          type: answer
+          variables: []
+        height: 106
+        id: '1719771445935'
+        position:
+          x: 1246
+          y: 469
+        positionAbsolute:
+          x: 1246
+          y: 469
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          context:
+            enabled: false
+            variable_selector: []
+          desc: "LLM \u753B\u50CF\u751F\u6210\u6307\u793A\u751F\u6210"
+          memory:
+            query_prompt_template: ''
+            role_prefix:
+              assistant: ''
+              user: ''
+            window:
+              enabled: false
+              size: 50
+          model:
+            completion_params:
+              temperature: 0.7
+            mode: chat
+            name: gpt-4o
+            provider: openai
+          prompt_template:
+            - id: 235a0189-655e-48cb-ac0c-2580bcb3716e
+              role: system
+              text:
+                "DALL-E\u306B\u6E21\u3059\u753B\u50CF\u751F\u6210\u3059\u308B\u6307\
+                \u793A\u3060\u3051\u3092\u751F\u6210\u3057\u3066\u304F\u3060\u3055\u3044\
+                \u3002\u3042\u306A\u305F\u306E\u30E1\u30C3\u30BB\u30FC\u30B8\u304C\u305D\
+                \u306E\u307E\u307E\u751F\u6210\u306B\u4F7F\u7528\u3055\u308C\u307E\u3059\
+                \u3002\u3042\u306A\u305F\u306F\u30CA\u30EB\u30B7\u30B9\u30C8\u306A\u306E\
+                \u3067\u3001\u3042\u306A\u305F\u306F\u30CA\u30EB\u30B7\u30B9\u30C8\u3089\
+                \u3057\u304F\u6307\u793A\u3092\u81EA\u7531\u306B\u89E3\u91C8\u3057\u3001\
+                \u30CA\u30EB\u30B7\u30B9\u30C8\u7684\u306A\u8981\u7D20\u306B\u5909\u3048\
+                \u3089\u308C\u308B\u3068\u3053\u308D\u304C\u3042\u308C\u3070\u6539\u7DE8\
+                \u3057\u3066\u751F\u6210\u3057\u3066\u4E0B\u3055\u3044\u3002\u306A\u3051\
+                \u308C\u3070\u30CA\u30EB\u30B7\u30B9\u30C8\u8981\u7D20\u3092\u8FFD\u52A0\
+                \u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5185\u5BB9\u306F\u5177\u4F53\
+                \u7684\u306B\u305D\u308C\u3060\u3051\u3067\u610F\u5473\u304C\u5206\u304B\
+                \u308B\u3088\u3046\u306B\u304A\u9858\u3044\u3057\u307E\u3059\u3002\u305D\
+                \u308C\u3068\u4EE5\u524D\u306E\u3084\u308A\u53D6\u308A\u3082\u3042\u308C\
+                \u3070\u305D\u308C\u3082\u306A\u308B\u3079\u304F\u53CD\u6620\u3057\u3066\
+                \u3002"
+            - id: 0d62b5e1-57b3-4656-833b-3368c349cc15
+              role: user
+              text: '{{#sys.query#}}'
+            - id: f08cb855-eb8d-43d6-ab9f-57cbd1853ab7
+              role: user
+              text: ''
+          selected: true
+          title: LLM 1
+          type: llm
+          variables: []
+          vision:
+            configs:
+              detail: high
+            enabled: true
+        height: 127
+        id: '1719779493089'
+        position:
+          x: 638
+          y: 447.0809707069126
+        positionAbsolute:
+          x: 638
+          y: 447.0809707069126
+        selected: true
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          desc: ''
+          provider_id: dalle
+          provider_name: dalle
+          provider_type: builtin
+          selected: false
+          title: DALL-E 3
+          tool_configurations:
+            n: 1
+            quality: hd
+            size: square
+            style: vivid
+          tool_label: DALL-E 3
+          tool_name: dalle3
+          tool_parameters:
+            prompt:
+              type: mixed
+              value: '{{#1719779493089.text#}}'
+          type: tool
+        height: 167
+        id: '1719780117765'
+        position:
+          x: 942
+          y: 469
+        positionAbsolute:
+          x: 942
+          y: 469
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+    viewport:
+      x: -263.50573772245116
+      y: -236.63636495437868
+      zoom: 1.5157165665103984
