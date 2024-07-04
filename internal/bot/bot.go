@@ -11,10 +11,11 @@ import (
 )
 
 type Bot struct {
-	session *discordgo.Session
-	app     *app.App
-	ctx     context.Context
-	mu      sync.Mutex
+	session        *discordgo.Session
+	app            *app.App
+	ctx            context.Context
+	mu             sync.Mutex
+	conversationId string
 }
 
 // BotInfo struct to hold bot's username and avatar URL
