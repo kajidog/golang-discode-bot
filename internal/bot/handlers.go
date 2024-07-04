@@ -1,6 +1,9 @@
 package bot
 
 import (
+	"desktop/internal/dify"
+	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -57,9 +60,29 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		s.ChannelTyping(m.ChannelID)
 
 		// ChatGPTに送信
-		response, _ := bot.app.ChatWithGPT(cleanContent)
+		// response, _ := bot.app.ChatWithGPT(cleanContent)
+		response, _ := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", bot.conversationId, cleanContent)
 
-		// Discordに返信
-		SendMessage(s, m.ChannelID, response)
+		bot.conversationId = response.ConversationID
+		println(bot.conversationId)
+
+		// 画像生成のURL抽出
+		url := dify.ExtractURLFromImageString(response.Answer)
+		if url == nil {
+			// Discordに返信
+			SendMessage(s, m.ChannelID, response.Answer)
+			return
+		}
+
+		// 生成された画像をダウンロード
+		file, err := dify.DownloadFile(*url)
+		if err != nil {
+			fmt.Println("Error downloading file:", err)
+			return
+		}
+
+		// ディスコードに送信
+		bot.SendFileToDiscord(m.ChannelID, file)
+		defer os.Remove(file.Name())
 	}
 }
