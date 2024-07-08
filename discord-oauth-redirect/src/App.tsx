@@ -1,8 +1,22 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import {  Link } from "react-router-dom";
+import { Route, Routes, useLocation, useSearchParams } from "react-router-dom";
 
 function App() {
-  let [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    const w = window as any;
+    if (w.dataLayer) {
+      w.dataLayer.push({
+        event: 'pageview',
+        page: location.pathname + location.search
+      });
+    }
+  }, [location]);
+
+
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const code = searchParams.get("code");
@@ -14,15 +28,27 @@ function App() {
   }, [searchParams]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        {searchParams.has("code") ? (
-          <p>認証コードをアプリに送信中...</p>
-        ) : (
-          <p>認証コードが見つかりません。</p>
-        )}
-      </header>
-    </div>
+    <>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
+            <li>
+              <Link to="/contact">Contact</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<>ほめ</>} />
+          <Route path="/about" element={<>about</>} />
+          <Route path="/contact" element={<>contact</>} />
+        </Routes>
+    </>
   );
 }
 
