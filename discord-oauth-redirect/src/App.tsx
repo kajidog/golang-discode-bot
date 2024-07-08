@@ -32,21 +32,21 @@ function App() {
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/golang-discode-bot/">Home</Link>
             </li>
             <li>
-              <Link to="/about">About</Link>
+              <Link to="/golang-discode-bot/about">About</Link>
             </li>
             <li>
-              <Link to="/contact">Contact</Link>
+              <Link to="/golang-discode-bot/contact">Contact</Link>
             </li>
           </ul>
         </nav>
 
         <Routes>
-          <Route path="/" element={<>ほめ</>} />
-          <Route path="/about" element={<>about</>} />
-          <Route path="/contact" element={<>contact</>} />
+          <Route path="/golang-discode-bot/" element={<>ほめ</>} />
+          <Route path="/golang-discode-bot/about" element={<>about</>} />
+          <Route path="/golang-discode-bot/contact" element={<>contact</>} />
         </Routes>
     </>
   );
