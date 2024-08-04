@@ -27,56 +27,53 @@ export const useBotTokenForm = ({ next }: { next: () => void }) => {
   });
 
   useEffect(() => {
-    GetBotConfig().then((config) => {
+    // アプリのデフォルトの設定があればそれを検証し、次の画面へ
+    const fetchBotConfig = async () => {
       setLoading(null);
-      if (
-        config.bot_token &&
-        config.client_id &&
-        config.client_secret &&
-        config.redirect_uri
-      ) {
-        setBotSetting(
-          config.bot_token,
-          config.client_id,
-          config.redirect_uri,
-          config.client_secret
-        )
-          .then(next)
-          .catch()
-          .finally(() => setLoading(false));
-      } else {
+      try {
+        const config = await GetBotConfig();
+        if (
+          config.bot_token &&
+          config.client_id &&
+          config.client_secret &&
+          config.redirect_uri
+        ) {
+          await setBotSetting(
+            config.bot_token,
+            config.client_id,
+            config.redirect_uri,
+            config.client_secret
+          );
+          next();
+        }
+      } catch (error) {
+        console.error('Failed to fetch bot config:', error);
+      } finally {
         setLoading(false);
       }
-    });
-  }, []);
+    };
+
+    fetchBotConfig();
+  }, [setBotSetting, next]);
 
   // フォームサブミット時の処理
   const setBotToken = async (value: BotFormValue) => {
+    setLoading(true);
     try {
-      // 通信中状態にし、コンテキストにフォーム内容を渡し、Go側でDiscordの認証を行う
-      setLoading(true);
       await setBotSetting(
         value.token,
         value.clientId,
         value.redirectURI,
         value.clientSecret
       );
-
       next(); // 例外エラーが発生しない場合は次のステップへ
     } catch (err) {
-      setError(
-        'token',
-        {
-          message: String(err),
-        },
-        {
-          shouldFocus: true,
-        }
-      );
+      setError('token', { message: String(err) }, { shouldFocus: true });
     } finally {
       setLoading(false);
     }
   };
+
   return {
     register,
     handleSubmit: handleSubmit(setBotToken),
