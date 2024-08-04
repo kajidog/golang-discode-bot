@@ -25,8 +25,8 @@ export const MENUS: Menu[] = [
     icon: <SettingsRoundedIcon></SettingsRoundedIcon>,
   },
   {
-    name: 'chat-gpt',
-    path: '/gpt',
+    name: 'dify',
+    path: '/dify',
     icon: <SmartToyRoundedIcon></SmartToyRoundedIcon>,
   },
 ];

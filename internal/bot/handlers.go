@@ -59,12 +59,18 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		// 入力中を設定
 		s.ChannelTyping(m.ChannelID)
 
+
 		// 保存済みのconversationIdを取得（存在しない場合は空文字列）
 		conversationId := bot.conversationIds[m.ChannelID]
 
 		// Difyに送信
-		response, _ := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", conversationId, cleanContent)
-
+		response, err := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", conversationId, cleanContent)
+		
+    if err != nil {
+			SendMessage(s, m.ChannelID, err.Error())
+			return
+		}
+    
 		// チャンネルごとにconversationIdを保存
 		bot.conversationIds[m.ChannelID] = response.ConversationID
 		println(bot.conversationIds[m.ChannelID])
