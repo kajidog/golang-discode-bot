@@ -17,7 +17,7 @@ func SplitMessage(message string) []string {
 
 	var chunks []string
 	var buffer strings.Builder
-	words := strings.Fields(message)
+	words := strings.Split(message, " ")
 
 	for _, word := range words {
 		if buffer.Len()+len(word)+1 > maxMessageLength {

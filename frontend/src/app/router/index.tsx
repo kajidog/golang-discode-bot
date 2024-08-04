@@ -8,6 +8,7 @@ import UserProtect from '../accessToken/UserProtect';
 import UserDictionary from '../../pages/setting/UserDoctonary';
 import { Layout } from '../../layout/Layout';
 import SoundPage from '../../pages/SoundPage';
+import { DifyPage } from '../../pages/DifyPage';
 
 type RouterProps = {};
 
@@ -19,6 +20,7 @@ const RouterComponent: React.FC<RouterProps> = ({}) => {
           <Route path="/" element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/sound" element={<SoundPage />} />
+            <Route path="/dify" element={<DifyPage />} />
           </Route>
         </Route>
       </Route>

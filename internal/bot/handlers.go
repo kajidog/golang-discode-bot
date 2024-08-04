@@ -61,8 +61,12 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 
 		// ChatGPTに送信
 		// response, _ := bot.app.ChatWithGPT(cleanContent)
-		response, _ := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", bot.conversationId, cleanContent)
+		response, err := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", bot.conversationId, cleanContent)
 
+		if err != nil {
+			SendMessage(s, m.ChannelID, err.Error())
+			return
+		}
 		bot.conversationId = response.ConversationID
 		println(bot.conversationId)
 
