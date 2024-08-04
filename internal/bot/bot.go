@@ -11,11 +11,11 @@ import (
 )
 
 type Bot struct {
-	session        *discordgo.Session
-	app            *app.App
-	ctx            context.Context
-	mu             sync.Mutex
-	conversationId string
+	session         *discordgo.Session
+	app             *app.App
+	ctx             context.Context
+	mu              sync.Mutex
+	conversationIds map[string]string
 }
 
 // BotInfo struct to hold bot's username and avatar URL
@@ -26,7 +26,8 @@ type BotInfo struct {
 
 func NewBot(app *app.App) *Bot {
 	return &Bot{
-		app: app,
+		app:             app,
+		conversationIds: make(map[string]string),
 	}
 }
 func (b *Bot) Startup(ctx context.Context) {

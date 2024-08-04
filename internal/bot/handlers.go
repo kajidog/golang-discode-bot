@@ -49,7 +49,7 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		Ts:        m.Timestamp.In(loc).Format("15時04分"),
 	}
 	runtime.EventsEmit(bot.ctx, "messageReceived", messageEvent)
-	print(m.Author.ID)
+
 	// Botにメンションされていた場合
 	if strings.Contains(m.Content, "<@"+s.State.User.ID+">") || strings.Contains(m.Content, "<@1155131358730014750>") {
 		// メンションを取り除く
@@ -59,30 +59,34 @@ func (bot *Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		// 入力中を設定
 		s.ChannelTyping(m.ChannelID)
 
-		// ChatGPTに送信
-		// response, _ := bot.app.ChatWithGPT(cleanContent)
-		response, _ := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", bot.conversationId, cleanContent)
+		// 保存済みのconversationIdを取得（存在しない場合は空文字列）
+		conversationId := bot.conversationIds[m.ChannelID]
 
-		bot.conversationId = response.ConversationID
-		println(bot.conversationId)
+		// Difyに送信
+		response, _ := dify.GenerateMessage("app-7wqAxjRqrWIBi1BQ1CVIcZeg", conversationId, cleanContent)
+
+		// チャンネルごとにconversationIdを保存
+		bot.conversationIds[m.ChannelID] = response.ConversationID
+		println(bot.conversationIds[m.ChannelID])
 
 		// 画像生成のURL抽出
 		url := dify.ExtractURLFromImageString(response.Answer)
-		if url == nil {
-			// Discordに返信
-			SendMessage(s, m.ChannelID, response.Answer)
+		if url != nil {
+			// 生成された画像をダウンロード
+			file, err := dify.DownloadFile(*url)
+			if err != nil {
+				fmt.Println("Error downloading file:", err)
+				return
+			}
+
+			// ディスコードに送信
+			bot.SendFileToDiscord(m.ChannelID, file)
+			defer os.Remove(file.Name()) // Discordに返信
 			return
 		}
 
-		// 生成された画像をダウンロード
-		file, err := dify.DownloadFile(*url)
-		if err != nil {
-			fmt.Println("Error downloading file:", err)
-			return
-		}
+		SendMessage(s, m.ChannelID, response.Answer)
+		return
 
-		// ディスコードに送信
-		bot.SendFileToDiscord(m.ChannelID, file)
-		defer os.Remove(file.Name())
 	}
 }
